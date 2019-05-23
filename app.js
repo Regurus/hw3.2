@@ -18,7 +18,9 @@ function executeReadQuery(q, receiver){
         console.log(item);
     })
 }
-
+app.get("/",(req, res)=>{
+    res.status(200).send("Hello, I`m your server");
+})
 app.use("/api/secure",(req, res, next) => {//authorization middleware all secure request should be passed with /api/secure prefix
     const token = req.header("x-auth-token");
     // no token
