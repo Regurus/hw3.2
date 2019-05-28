@@ -92,6 +92,9 @@ app.get("/api/getPointInfo", (req, res) => {
         result.last_reviews = item[0].last_reviews;
         res.status(200).send(result);
     })
+    prom.catch((err)=>{
+        res.status(400).send("Error,"+err);
+    })
 });
 
 app.post("/api/registerUser", (req, res) => {//TODO write to db
@@ -115,12 +118,13 @@ app.post("/api/registerUser", (req, res) => {//TODO write to db
                 result.msg = "OK"
                 res.status(200).send(result);
             })
-            prom3.catch((exception)=> {
-                res.status(400).send("something went wrong, sent it again please.");
-            });
+            
 
         })
     })
+    prom.catch((exception)=> {
+        res.status(400).send("Error "+exception);
+    });
     
 });
 
@@ -135,6 +139,9 @@ app.get("/api/getSecretQ", (req, res) => {
         }
         res.status(200).send(result);
     })
+    prom.catch((exception)=> {
+        res.status(400).send("Error "+exception);
+    });
 });
 
 app.post("/api/getUserPassword", (req, res)=> {
@@ -191,6 +198,9 @@ app.get("/api/secure/getLastSavedPoints",(req,res)=>{
     q.then((item)=> {
         res.status(200).send(item);
     }) 
+    q.catch((err)=>{
+        res.status(400).send("Error "+err);
+    });
 });
 
 app.put("/api/secure/addToFavorites", (req,res)=>{
@@ -210,7 +220,11 @@ app.delete("/api/secure/removeFromFavorites", (req, res)=>{
     q.then((item)=> {
         var result = new Object();
         result.msg = "OK"
-        res.status(200).send(result);    })
+        res.status(200).send(result);    
+    })
+    q.catch((err)=>{
+        res.status(400).send("Error "+err);
+    });
 });
 
 app.get("/api/secure/getAllFavorites",(req,res)=>{
