@@ -196,7 +196,10 @@ app.get("/api/secure/getLastSavedPoints",(req,res)=>{
     //var now = Date.now();
     var q = query("SELECT TOP 2 pointID FROM favorite WHERE username = '"+ req.decoded.name+"' ORDER BY date DESC");
     q.then((item)=> {
-        res.status(200).send(item);
+        var result = new Object();
+        result.p1 = item[0].pointID.trim();
+        result.p2 = item[1].pointID.trim();
+        res.status(200).send(result);
     }) 
     q.catch((err)=>{
         res.status(400).send("Error "+err);
@@ -205,7 +208,7 @@ app.get("/api/secure/getLastSavedPoints",(req,res)=>{
 
 app.put("/api/secure/addToFavorites", (req,res)=>{
 
-    var q = query("INSERT INTO favorite VALUES ('"+req.decoded.name+"','"+req.body.pointid+"',NULL,CURRENT_TIMESTAMP);" )
+    var q = query("INSERT INTO favorite VALUES ('"+req.decoded.name+"','"+req.body.pointid+"','0',CURRENT_TIMESTAMP);" )
     q.then((item)=>{
         var result = new Object();
         result.msg = "OK"
@@ -230,7 +233,13 @@ app.delete("/api/secure/removeFromFavorites", (req, res)=>{
 app.get("/api/secure/getAllFavorites",(req,res)=>{
     var q = query("SELECT pointID FROM favorite WHERE username='"+req.decoded.name+"'");
     q.then((item)=>{
-        res.status(200).send(item);
+        result = new Object();
+        result.pointid = new Array();
+        for(var i=0;i<item.length;i++){
+            result.pointid.push(item[i].pointID.trim());
+        }
+        
+        res.status(200).send(result);
     })
     q.catch((err)=>{
         res.status(200).send("DB Error: "+err);
@@ -252,7 +261,7 @@ app.post("/api/secure/ratePoint", (req,res)=>{
                     console.log("p3");
                     var reviews;
                     var lastReviews="";
-                    if(item[0].last_reviews){
+                    if(item[0].last_reviews != undefined){
                         reviews = item[0].last_reviews.split("!$!$")
                         reviews[1] = reviews[0];
                         lastReviews = reviews[1];
@@ -398,11 +407,12 @@ app.get("/api/isUserExists", (req, res)=>{
 });
 
 app.put("/api/secure/setUserOrder", (req,res)=>{
-    var q = query("UPDATE favorite SET userOrder='"+req.body.number+"'WHERE username='"+req.decoded.name+"' AND pointID='"+ req.body.pointid+"'");
+    var q = query("UPDATE favorite SET userOrder='"+req.body.number+"' WHERE username='"+req.decoded.name+"' AND pointID='"+ req.body.pointid+"'");
     q.then((item)=>{
         var result = new Object();
         result.msg = "OK"
-        res.status(200).send(result);    })
+        res.status(200).send(result);    
+    })
     q.catch((err)=>{
         res.status(200).send("ERROR " +err);
     })
