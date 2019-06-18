@@ -23,6 +23,12 @@ app.get("/",(req, res)=>{
     res.send("Hello, I`m your server");
 });
 app.use("/api",(req,res,next)=>{//sanity check on query inputs
+    console.log(req);
+    res.setHeader('Access-Control-Allow-Origin','http://127.0.0.1:5500');
+    res.setHeader('Access-Control-Allow-Methods','GET,POST,PUT,DELETE');
+    res.setHeader('Access-Control-Allow-Headers','X-Requested-With,content-type');
+    res.setHeader('Access-Control-Allow-Credentials',true);
+
     next();//for now
 });
 app.use("/api/secure",(req, res, next) => {//authorization middleware all secure request should be passed with "/api/secure" prefix
@@ -66,7 +72,11 @@ app.get("/api/getAllCategories", (req, res) => {
     })
     
 });
+app.get("/api/threads", (req, res) => {
+    console.log(req.query);
+    res.status(404).send();
 
+});
 //test action - tested in congestion with login and secure procedure
 app.post("/api/secure/secureAction", (req,res)=>{
     console.log("secure action done");
